@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_title"
+            android:icon="@android:drawable/btn_radio"
+            android:title="@string/menu_title" />
+        <item
+            android:id="@+id/menu_artist"
+            android:icon="@android:drawable/btn_radio"
+            android:title="@string/menu_artist" />
+        <item
+            android:id="@+id/menu_album"
+            android:icon="@android:drawable/btn_radio"
+            android:title="@string/menu_album" />
+        <item
+            android:id="@+id/menu_genre"
+            android:icon="@android:drawable/btn_radio"
+            android:title="@string/menu_genre" />
+
+    </group>
+
+    <item android:title="Menu">
+        <menu>
+            <item
+                android:id="@+id/nav_mylist"
+                android:icon="@android:drawable/ic_menu_sort_by_size"
+                android:title="@string/action_mylist" />
+            <item
+                android:id="@+id/nav_search"
+                android:icon="@android:drawable/ic_menu_search"
+                android:title="@string/action_search" />
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@android:drawable/ic_menu_manage"
+                android:title="@string/action_settings" />
+        </menu>
+    </item>
+
+</menu>
