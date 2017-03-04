@@ -25,6 +25,7 @@
     <!-- 툴바 아래에 컨텐츠 영역 -->
 
     <!-- 화면에 떠있는 버튼 -->
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -35,6 +36,17 @@
         android:tint="#ffffff"
         app:backgroundTint="?attr/colorPrimary" />
 
-    <include layout="@layout/content_main" />
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="27dp"
+        android:layout_height="27dp"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:srcCompat="@android:drawable/arrow_up_float"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/btnUp"
+        android:layout_gravity="bottom|center_horizontal"
+        app:layout_anchorGravity="center_vertical|center_horizontal" />
+
+    <include layout="@layout/content_main"/>
 
 </android.support.design.widget.CoordinatorLayout>

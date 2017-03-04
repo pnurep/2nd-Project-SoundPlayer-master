@@ -9,6 +9,7 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
     <!-- 화면 레이아웃 전체 -->
     <include
         layout="@layout/app_bar_main"

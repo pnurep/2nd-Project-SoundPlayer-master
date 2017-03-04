@@ -1,6 +1,13 @@
 package com.veryworks.android.soundplayer;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -9,39 +16,47 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.veryworks.android.soundplayer.domain.Database;
+import com.veryworks.android.soundplayer.domain.Sound;
 import com.veryworks.android.soundplayer.util.fragment.PagerAdapter;
+
+import java.text.Format;
+import java.util.List;
 
 import static com.veryworks.android.soundplayer.R.id.tab;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final int REQ_PERMISSION = 100; // 권한요청코드
     ViewPager viewPager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        if(savedInstanceState != null)
+//            return;
+
+        checkPermission();
+    }
+
+    private void init(){
+
         // 화면의 툴바 가져오기
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         // toolbar.setTitleTextColor(Color.BLACK); // 타이틀 텍스트 컬러 변경
         setSupportActionBar(toolbar);
-
-        // 플로팅 버튼 설정
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setShuffle();
-            }
-        });
 
         // 네비 드로워 설정
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -59,19 +74,27 @@ public class MainActivity extends AppCompatActivity
         // tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE); // 가로축 스크롤하기
 
         // 탭 생성 및 타이틀 입력
-        tabLayout.addTab( tabLayout.newTab().setText( getResources().getString(R.string.menu_title)) );
+        tabLayout.addTab( tabLayout.newTab().setText(
+                getResources().getString( R.string.menu_title )) // "Title" -> values/strings.xml > 값을 세팅
+        );
         tabLayout.addTab( tabLayout.newTab().setText( getResources().getString(R.string.menu_artist)) );
         tabLayout.addTab( tabLayout.newTab().setText( getResources().getString(R.string.menu_album)) );
         tabLayout.addTab( tabLayout.newTab().setText( getResources().getString(R.string.menu_genre)) );
         // 2. 뷰페이저
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         // 아답터 설정 필요
-        PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
+        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
         // 아답터에 프래그먼트 추가
-        adapter.add(new OneFragment());
-        adapter.add(new TwoFragment());
-        adapter.add(new ThreeFragment());
-        adapter.add(new FourFragment());
+
+        final ListFragment listFragment1 = ListFragment.newInstance(1, ListFragment.TYPE_SONG);
+        final ListFragment listFragment2 = ListFragment.newInstance(3, ListFragment.TYPE_ARTIST);
+        final ListFragment listFragment3 = ListFragment.newInstance(3, ListFragment.TYPE_ALBUM);
+        final ListFragment listFragment4 = ListFragment.newInstance(1, ListFragment.TYPE_GENRE);
+
+        adapter.add(listFragment1);
+        adapter.add(listFragment2);
+        adapter.add(listFragment3);
+        adapter.add(listFragment4);
 
         viewPager.setAdapter(adapter);
 
@@ -80,6 +103,36 @@ public class MainActivity extends AppCompatActivity
 
         // 2. 탭 리스너 : 탭이 변경되었을 때 페이지를 바꿔저는 리스너
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+
+
+        // 플로팅 버튼 설정
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setShuffle();
+            }
+        });
+
+        FloatingActionButton btnUp = (FloatingActionButton) findViewById(R.id.btnUp);
+        btnUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (viewPager.getCurrentItem()){
+                    case 0 :
+                        listFragment1.recyclerView.smoothScrollToPosition(listFragment1.position);
+                    break;
+                    case 1 :
+                        listFragment2.recyclerView.smoothScrollToPosition(listFragment2.position);
+                        break;
+                    case 2 :
+                        listFragment3.recyclerView.smoothScrollToPosition(listFragment3.position);
+                        break;
+                    case 3 :
+                        listFragment4.recyclerView.smoothScrollToPosition(listFragment4.position);
+                }
+            }
+        });
 
     }
 
@@ -102,6 +155,40 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setQueryHint(null);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Sound sound;
+                String title = null;
+                String artist = null;
+
+                for(int i=0; i<Database.getSoundListSize(); i++){
+                    sound = Database.getSound(i);
+                    title = sound.getTitle();
+                    artist = sound.getArtist();
+
+                }
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                intent.putExtra("query", query);
+                intent.putExtra("title", title);
+                intent.putExtra("artist", artist);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                return false;
+            }
+        });
+
         return true;
     }
     // 툴바 우측 상단 메뉴 onClick
@@ -155,4 +242,36 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    // 권한관리
+    private void checkPermission() {
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
+            if( PermissionControl.checkPermission(this, REQ_PERMISSION) ){
+                init();
+            }
+        }else{
+            init();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == REQ_PERMISSION){
+            if( PermissionControl.onCheckResult(grantResults)){
+                init();
+            }else{
+                Toast.makeText(this, "권한을 허용하지 않으시면 프로그램을 실행할 수 없습니다.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+//    //13글자 이상일경우 ...으로 표기
+//    public static String titleFomatter(String title) {
+//        String result = String.format("%10s", title);
+//        result = result + "...";
+//        return result;
+//    }
+
+
 }
