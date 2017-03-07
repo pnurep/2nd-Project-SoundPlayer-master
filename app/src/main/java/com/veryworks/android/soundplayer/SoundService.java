@@ -147,7 +147,7 @@ public class SoundService extends Service implements ControlInterface {
             controller.pause();
         } else if( action.equalsIgnoreCase( ACTION_PREVIOUS ) ) {
             action_temp = ACTION_PLAY;
-
+            controller.play();
         } else if( action.equalsIgnoreCase( ACTION_NEXT ) ) {
             action_temp = ACTION_PLAY;
             controller.play();

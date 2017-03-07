@@ -124,6 +124,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
 
 
     private void prev() {
+        Log.i("플레이어액티비티 / prev()","=====================");
         position = position - 1;
         Intent intent = new Intent(this, SoundService.class);
         intent.setAction(SoundService.ACTION_PREVIOUS);
@@ -131,8 +132,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
         intent.putExtra(ListFragment.ARG_POSITION, position);
         viewPager.setCurrentItem(position);
         startService(intent);
-
-
+        Log.i("플레이어액티비티 / 스타트서비스","=====================" + position);
     }
 
     private void next() {
