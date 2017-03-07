@@ -34,7 +34,7 @@ public class SoundService extends Service implements ControlInterface {
     public static int position = -1;
 
     public static String action = "";
-    public static String action_temp = ""; //action의 바로 이전 단계를 저장
+    public static String action_temp = ""; //action의 바로 이전 단계를 저장.
 
     List<Sound> datas = new ArrayList<>();
 
