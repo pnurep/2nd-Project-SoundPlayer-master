@@ -66,7 +66,6 @@ public class SoundService extends Service implements ControlInterface {
                         casePrev();
                         break;
                 }
-
                 Log.i("서비스의 포지션","=======================" + position);
                 if(mMediaPlayer == null) {
                     initMedia();
@@ -95,7 +94,7 @@ public class SoundService extends Service implements ControlInterface {
     }
 
     private void casePrev(){
-        if(position > 0){
+        if(position >= 0){
             Log.i("케이스 프리브","==================");
              if(action_temp == ACTION_PLAY){
                  mMediaPlayer.release();

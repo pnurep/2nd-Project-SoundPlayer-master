@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.veryworks.android.soundplayer.domain.Sound;
 
@@ -28,6 +29,8 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     TextView txtDuration,txtCurrent;
     // 리스트 타입
     String list_type = "";
+
+    public static int viewingPosition = 0;  // 재생상태와는 상관없이 내가 눈으로 보고있는 음악의 포지션
 
     Controller controller;
 
@@ -122,7 +125,6 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
         startService(intent);
     }
 
-
     private void prev() {
         Log.i("플레이어액티비티 / prev()","=====================");
         position = position - 1;
@@ -155,17 +157,19 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
                     if(SoundService.mMediaPlayer == null || SoundService.action == SoundService.ACTION_PAUSE){
                         Log.d("플레이","======================");
                         play();
-                    }else {
-                        pause();
                     }
+                    else {pause();}
                     break;
                 case R.id.btnRew:
                     Log.d("Rew","======================");
-                    prev();
+                    if(position>0){prev();}
+                    else {Toast.makeText(getApplicationContext(), "마지막페이지입니다.", Toast.LENGTH_SHORT).show();}
                     break;
                 case R.id.btnFf:
-                    Log.d("FF","======================");
-                    next();
+                    if(position < datas.size()-1){
+                        Log.d("FF","======================");
+                        next();
+                    }else{Toast.makeText(getApplicationContext(), "마지막페이지입니다.", Toast.LENGTH_SHORT).show();}
                     break;
             }
         }

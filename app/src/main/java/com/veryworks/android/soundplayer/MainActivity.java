@@ -45,6 +45,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.i("메인액티비티 - 온크리에이트","======================");
+
+
 //        if(savedInstanceState != null)
 //            return;
 
@@ -266,7 +269,27 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    //13글자 이상일경우 ...으로 표기
+    @Override
+    protected void onResume() {
+        Log.i("메인액티비티 - 온리줌","======================");
+
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i("메인액티비티 - 온스탑","======================");
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i("메인액티비티 - 온디스트로이","======================");
+        super.onDestroy();
+    }
+
+    //    //13글자 이상일경우 ...으로 표기
 //    public static String titleFomatter(String title) {
 //        String result = String.format("%10s", title);
 //        result = result + "...";
