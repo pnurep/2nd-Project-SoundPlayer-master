@@ -108,12 +108,24 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     }
 
     private void play() {
-        Log.d("플레이함수","======================");
-        Intent intent = new Intent(this, SoundService.class);
-        intent.setAction(SoundService.ACTION_PLAY);
-        intent.putExtra(ListFragment.ARG_POSITION, position);
-        intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
-        startService(intent);
+
+        if(position == viewingPosition){
+            Log.d("플레이함수","======================");
+            Intent intent = new Intent(this, SoundService.class);
+            intent.setAction(SoundService.ACTION_PLAY);
+            intent.putExtra(ListFragment.ARG_POSITION, position);
+            intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
+            startService(intent);
+        }else {
+            Log.d("플레이함수","======================");
+            Intent intent = new Intent(this, SoundService.class);
+            intent.setAction(SoundService.ACTION_PLAY);
+            intent.putExtra(ListFragment.ARG_POSITION, viewingPosition);
+            intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
+            startService(intent);
+        }
+
+
     }
 
     private void pause(){

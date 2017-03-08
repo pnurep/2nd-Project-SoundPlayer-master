@@ -38,6 +38,8 @@ public class SoundService extends Service implements ControlInterface {
 
     List<Sound> datas = new ArrayList<>();
 
+    Uri musicUri = null;
+
     Controller controller;
 
     public SoundService(){
@@ -59,6 +61,9 @@ public class SoundService extends Service implements ControlInterface {
                 position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
 
                 switch (intent.getAction()){
+                    case ACTION_PLAY :
+                        casePlay();
+                        break;
                     case ACTION_NEXT :
                         caseNext();
                         break;
@@ -76,6 +81,15 @@ public class SoundService extends Service implements ControlInterface {
         handleAction(intent);
         return super.onStartCommand(intent, flags, startId);
     }
+
+
+    private void casePlay(){
+        if(position != PlayerActivity.viewingPosition){
+            mMediaPlayer.release();
+            initMedia();
+        }
+    }
+
 
 
     private void caseNext(){
@@ -117,8 +131,12 @@ public class SoundService extends Service implements ControlInterface {
             }
         }
 
-        // 음원 uri
-        Uri musicUri = datas.get(position).music_uri; //TODO datas.get(position).music_uri;
+        if(position == PlayerActivity.viewingPosition){
+            // 음원 uri
+            musicUri = datas.get(position).music_uri; //TODO datas.get(position).music_uri;
+        }else if (position != PlayerActivity.viewingPosition){
+            musicUri = datas.get(PlayerActivity.viewingPosition).music_uri;
+        }
 
         // 플레이어에 음원 세팅
         mMediaPlayer = MediaPlayer.create(this, musicUri);

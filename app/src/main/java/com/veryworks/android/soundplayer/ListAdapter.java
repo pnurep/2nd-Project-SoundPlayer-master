@@ -123,6 +123,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> im
                             Intent intent = new Intent(context, PlayerActivity.class);
                             intent.putExtra(ListFragment.ARG_POSITION, position);
                             intent.putExtra(ListFragment.ARG_LIST_TYPE, flag);
+                            PlayerActivity.viewingPosition = position;
                             context.startActivity(intent);
                         }
                     });
