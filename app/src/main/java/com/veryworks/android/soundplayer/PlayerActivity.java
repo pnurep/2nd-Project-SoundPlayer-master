@@ -53,6 +53,12 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
         btnPlay = (ImageButton) findViewById(R.id.btnPlay);
         btnFf = (ImageButton) findViewById(R.id.btnFf);
 
+        if(SoundService.mMediaPlayer == null) {
+            btnPlay.setImageResource(android.R.drawable.ic_media_play);
+        } else if(SoundService.mMediaPlayer.isPlaying()){
+            btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+        }
+
         btnRew.setOnClickListener(clickListener);
         btnPlay.setOnClickListener(clickListener);
         btnFf.setOnClickListener(clickListener);
@@ -87,6 +93,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
         }
         controller = Controller.getInstance();
         controller.addObserver(this);
+
     }
 
     // 컨트롤러 정보 초기화
@@ -107,21 +114,12 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     }
 
     private void play() {
-        if(position == viewingPosition){
-            Log.d("플레이함수","======================");
-            Intent intent = new Intent(this, SoundService.class);
-            intent.setAction(SoundService.ACTION_PLAY);
-            intent.putExtra(ListFragment.ARG_POSITION, position);
-            intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
-            startService(intent);
-        }else {
-            Log.d("플레이함수","======================");
-            Intent intent = new Intent(this, SoundService.class);
-            intent.setAction(SoundService.ACTION_PLAY);
-            intent.putExtra(ListFragment.ARG_POSITION, viewingPosition);
-            intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
-            startService(intent);
-        }
+        Log.d("플레이함수","======================");
+        Intent intent = new Intent(this, SoundService.class);
+        intent.setAction(SoundService.ACTION_PLAY);
+        intent.putExtra(ListFragment.ARG_POSITION, position);
+        intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
+        startService(intent);
     }
 
     private void pause(){

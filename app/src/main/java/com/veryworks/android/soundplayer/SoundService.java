@@ -1,5 +1,6 @@
 package com.veryworks.android.soundplayer;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -36,6 +37,8 @@ public class SoundService extends Service implements ControlInterface {
     public static String action = "";
     public static String action_temp = ""; //action의 바로 이전 단계를 저장.
 
+    NotificationManager notificationManager;
+
     List<Sound> datas = new ArrayList<>();
 
     Uri musicUri = null;
@@ -48,32 +51,53 @@ public class SoundService extends Service implements ControlInterface {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         Log.i("온스타트커맨드","==================");
+        Log.i("미디어 플레이어", "================" + mMediaPlayer);
+        Log.i("온스타트커맨드 포지션","=============" + position);
+
         if(intent != null) {
             if(intent.getExtras() != null) {
-                listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
-                position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
-
-                switch (intent.getAction()){
-                    case ACTION_PLAY :
-                        casePlay();
-                        break;
-                    case ACTION_NEXT :
-                        caseNext();
-                        break;
-                    case ACTION_PREVIOUS :
-                        casePrev();
-                        break;
-                }
-                Log.i("서비스의 포지션","=======================" + position);
                 if(mMediaPlayer == null) {
+                    listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
+                    position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
                     initMedia();
+                }
+               else if(position == intent.getExtras().getInt(ListFragment.ARG_POSITION)){
+                    listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
+                    position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
+
+                    switch (intent.getAction()){
+                        case ACTION_PLAY :
+                            casePlay();
+                            break;
+                        case ACTION_NEXT :
+                            caseNext();
+                            break;
+                        case ACTION_PREVIOUS :
+                            casePrev();
+                            break;
+                    }
+                    Log.i("서비스의 포지션","=======================" + position);
+
+                }else if(position != intent.getExtras().getInt(ListFragment.ARG_POSITION)){
+                    listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
+                    position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
+                    mMediaPlayer.release();
+                    initMedia();
+                    Log.i("서비스의 포지션","=======================" + position);
                 }
             }
         }
@@ -84,12 +108,10 @@ public class SoundService extends Service implements ControlInterface {
 
 
     private void casePlay(){
-        if(position != PlayerActivity.viewingPosition){
-            mMediaPlayer.release();
+        if(mMediaPlayer == null){
             initMedia();
         }
     }
-
 
 
     private void caseNext(){
@@ -130,10 +152,8 @@ public class SoundService extends Service implements ControlInterface {
                 case ListFragment.TYPE_ARTIST :
             }
         }
-
-            // 음원 uri
-            musicUri = datas.get(position).music_uri; //TODO datas.get(position).music_uri;
-
+        // 음원 uri
+        musicUri = datas.get(position).music_uri; //TODO datas.get(position).music_uri;
 
         // 플레이어에 음원 세팅
         mMediaPlayer = MediaPlayer.create(this, musicUri);
@@ -168,6 +188,7 @@ public class SoundService extends Service implements ControlInterface {
         } else if( action.equalsIgnoreCase( ACTION_STOP ) ) {
             action_temp = ACTION_STOP;
             controller.stop();
+            stopForeground(true);
         }
     }
 
@@ -182,7 +203,7 @@ public class SoundService extends Service implements ControlInterface {
     }
 
     // 노티바를 생성하는 함수
-    private void buildNotification( NotificationCompat.Action action , String action_flag) {
+    private Notification buildNotification(NotificationCompat.Action action , String action_flag) {
 
         Log.i("노티바 생성됨","=========================");
 
@@ -210,9 +231,11 @@ public class SoundService extends Service implements ControlInterface {
         builder.addAction(action);
         builder.addAction(generateAction(android.R.drawable.ic_media_next, "Next", ACTION_NEXT));
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // 노티바를 화면에 보여준다
         notificationManager.notify(NOTIFICATION_ID , builder.build());
+
+        return builder.build();
     }
 
 
@@ -252,6 +275,7 @@ public class SoundService extends Service implements ControlInterface {
     private void playerStart(){
         // 노티피케이션 바 생성
         buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE );
+        startForeground(NOTIFICATION_ID, buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE ));
         mMediaPlayer.start();
     }
 
