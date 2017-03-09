@@ -37,6 +37,7 @@ public class SoundService extends Service implements ControlInterface {
     public static String action = "";
     public static String action_temp = ""; //action의 바로 이전 단계를 저장.
 
+    Notification notification;
     NotificationManager notificationManager;
 
     List<Sound> datas = new ArrayList<>();
@@ -50,11 +51,6 @@ public class SoundService extends Service implements ControlInterface {
         controller.addObserver(this);
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -113,11 +109,8 @@ public class SoundService extends Service implements ControlInterface {
         }
     }
 
-
     private void caseNext(){
         Log.i("케이스 넥스트","==================");
-//        if(position < datas.size()){
-            //action = ACTION_PLAY; //이전 액션상태가 남아있으므로 바꾸어준다
             if(action_temp == ACTION_PLAY){
                 mMediaPlayer.release();
                 Log.i("미디어 플레이어 릴리즈","==================");
@@ -126,7 +119,6 @@ public class SoundService extends Service implements ControlInterface {
             }else{
                 initMedia();
             }
-        //}
     }
 
     private void casePrev(){
@@ -181,10 +173,10 @@ public class SoundService extends Service implements ControlInterface {
             controller.pause();
         } else if( action.equalsIgnoreCase( ACTION_PREVIOUS ) ) {
             action_temp = ACTION_PLAY;
-            controller.play();
+            controller.prev();
         } else if( action.equalsIgnoreCase( ACTION_NEXT ) ) {
             action_temp = ACTION_PLAY;
-            controller.play();
+            controller.next();
         } else if( action.equalsIgnoreCase( ACTION_STOP ) ) {
             action_temp = ACTION_STOP;
             controller.stop();
@@ -233,7 +225,7 @@ public class SoundService extends Service implements ControlInterface {
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // 노티바를 화면에 보여준다
-        notificationManager.notify(NOTIFICATION_ID , builder.build());
+        //notificationManager.notify(NOTIFICATION_ID , builder.build());
 
         return builder.build();
     }
@@ -274,13 +266,16 @@ public class SoundService extends Service implements ControlInterface {
 
     private void playerStart(){
         // 노티피케이션 바 생성
-        buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE );
-        startForeground(NOTIFICATION_ID, buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE ));
+        //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE );
+        notification = buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE );
+        notificationManager.notify(NOTIFICATION_ID, notification);
+        startForeground(NOTIFICATION_ID, notification);
         mMediaPlayer.start();
     }
 
     private void playerPause(){
-        buildNotification( generateAction( android.R.drawable.ic_media_play, "Play", ACTION_PLAY ), ACTION_PLAY);
+        notification = buildNotification( generateAction( android.R.drawable.ic_media_play, "Play", ACTION_PLAY ), ACTION_PLAY);
+        notificationManager.notify(NOTIFICATION_ID, notification);
         mMediaPlayer.pause();
     }
 
