@@ -195,7 +195,7 @@ public class SoundService extends Service implements ControlInterface {
     }
 
     // 노티바를 생성하는 함수
-    private Notification buildNotification(NotificationCompat.Action action , String action_flag) {
+    private Notification buildNotification(NotificationCompat.Action action ) {
 
         Log.i("노티바 생성됨","=========================");
 
@@ -267,25 +267,52 @@ public class SoundService extends Service implements ControlInterface {
     private void playerStart(){
         // 노티피케이션 바 생성
         //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE );
-        notification = buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE );
+        notification = buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ));
         notificationManager.notify(NOTIFICATION_ID, notification);
         startForeground(NOTIFICATION_ID, notification);
         mMediaPlayer.start();
     }
 
     private void playerPause(){
-        notification = buildNotification( generateAction( android.R.drawable.ic_media_play, "Play", ACTION_PLAY ), ACTION_PLAY);
+
+        notification = buildNotification( generateAction( android.R.drawable.ic_media_play, "Play", ACTION_PLAY ));
         notificationManager.notify(NOTIFICATION_ID, notification);
         mMediaPlayer.pause();
     }
 
     private void playerNext(){
         position = position + 1;
+
+        if(mMediaPlayer != null){
+            mMediaPlayer.release();
+        }
         initMedia();
+
+        if(mMediaPlayer.isPlaying()){
+            notification = buildNotification(generateAction(android.R.drawable.ic_media_play, "PLAY", ACTION_PLAY));
+        }else {
+            notification = buildNotification(generateAction(android.R.drawable.ic_media_pause, "PAUSE", ACTION_PAUSE));
+
+        }
+
+        notificationManager.notify(NOTIFICATION_ID, notification);
+        mMediaPlayer.start();
     }
 
     private void playerPrev(){
+        position = position - 1;
 
+        if(mMediaPlayer != null){
+            mMediaPlayer.release();
+        }
+        initMedia();
+        if(mMediaPlayer.isPlaying()){
+            notification = buildNotification(generateAction(android.R.drawable.ic_media_play, "PLAY", ACTION_PLAY));
+        }else {
+            notification = buildNotification(generateAction(android.R.drawable.ic_media_pause, "PAUSE", ACTION_PAUSE));
+        }
+        notificationManager.notify(NOTIFICATION_ID, notification);
+        mMediaPlayer.start();
     }
 
     private void playerStop(){
