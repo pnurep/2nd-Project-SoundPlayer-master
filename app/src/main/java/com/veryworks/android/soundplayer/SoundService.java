@@ -94,7 +94,7 @@ public class SoundService extends Service implements ControlInterface {
 
     private void caseNext(){
         Log.i("케이스 넥스트","==================");
-        if(position < datas.size()){
+//        if(position < datas.size()){
             //action = ACTION_PLAY; //이전 액션상태가 남아있으므로 바꾸어준다
             if(action_temp == ACTION_PLAY){
                 mMediaPlayer.release();
@@ -104,7 +104,7 @@ public class SoundService extends Service implements ControlInterface {
             }else{
                 initMedia();
             }
-        }
+        //}
     }
 
     private void casePrev(){
@@ -131,12 +131,9 @@ public class SoundService extends Service implements ControlInterface {
             }
         }
 
-        if(position == PlayerActivity.viewingPosition){
             // 음원 uri
             musicUri = datas.get(position).music_uri; //TODO datas.get(position).music_uri;
-        }else if (position != PlayerActivity.viewingPosition){
-            musicUri = datas.get(PlayerActivity.viewingPosition).music_uri;
-        }
+
 
         // 플레이어에 음원 세팅
         mMediaPlayer = MediaPlayer.create(this, musicUri);

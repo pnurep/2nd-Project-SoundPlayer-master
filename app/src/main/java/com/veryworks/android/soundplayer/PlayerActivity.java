@@ -85,7 +85,6 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
                 viewPager.setCurrentItem(position);
             }
         }
-
         controller = Controller.getInstance();
         controller.addObserver(this);
     }
@@ -108,7 +107,6 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     }
 
     private void play() {
-
         if(position == viewingPosition){
             Log.d("플레이함수","======================");
             Intent intent = new Intent(this, SoundService.class);
@@ -124,8 +122,6 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
             intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
             startService(intent);
         }
-
-
     }
 
     private void pause(){

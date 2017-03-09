@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity
         Log.i("메인액티비티 - 온크리에이트","======================");
 
 
-//        if(savedInstanceState != null)
-//            return;
+        if(savedInstanceState != null)
+            return;
 
         checkPermission();
     }
