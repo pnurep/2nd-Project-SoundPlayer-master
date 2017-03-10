@@ -37,12 +37,14 @@ import java.util.List;
 
         public void pause(){
             for(ControlInterface target : targets){
+                Log.i("Controller / pause","========================" + targets);
                 target.pausePlayer();
             }
         }
 
         public void next(){
             for(ControlInterface target : targets){
+                Log.i("Controller / next","========================" + targets);
                 target.nextPlayer();
             }
         }

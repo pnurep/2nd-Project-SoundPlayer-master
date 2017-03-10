@@ -113,46 +113,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
         seekBar.setMax(sound.getDuration());
     }
 
-    private void play() {
-        Log.d("플레이함수","======================");
-        Intent intent = new Intent(this, SoundService.class);
-        intent.setAction(SoundService.ACTION_PLAY);
-        intent.putExtra(ListFragment.ARG_POSITION, position);
-        intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
-        startService(intent);
-    }
 
-    private void pause(){
-        Log.d("포즈함수","======================");
-        Intent intent = new Intent(this, SoundService.class);
-        intent.setAction(SoundService.ACTION_PAUSE);
-        intent.putExtra(ListFragment.ARG_POSITION, position);
-        intent.putExtra(ListFragment.ARG_LIST_TYPE, list_type);
-        startService(intent);
-    }
-
-    private void prev() {
-        Log.i("플레이어액티비티 / prev()","=====================");
-        position = position - 1;
-        Intent intent = new Intent(this, SoundService.class);
-        intent.setAction(SoundService.ACTION_PREVIOUS);
-        intent.putExtra(ListFragment.ARG_LIST_TYPE, list_type);
-        intent.putExtra(ListFragment.ARG_POSITION, position);
-        viewPager.setCurrentItem(position);
-        startService(intent);
-        Log.i("플레이어액티비티 / 스타트서비스","=====================" + position);
-    }
-
-    private void next() {
-        position = position + 1;
-        Intent intent = new Intent(this, SoundService.class);
-        intent.setAction(SoundService.ACTION_NEXT);
-        intent.putExtra(ListFragment.ARG_LIST_TYPE, list_type);
-        intent.putExtra(ListFragment.ARG_POSITION, position);
-        viewPager.setCurrentItem(position);
-        Log.i("현재포지션","=====================" + position);
-        startService(intent);
-    }
 
     // 버튼 클릭 리스너
     View.OnClickListener clickListener = new View.OnClickListener(){
@@ -168,7 +129,9 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
                     break;
                 case R.id.btnRew:
                     Log.d("Rew","======================");
-                    if(position>0){prev();}
+                    if(position>0){
+                        prev();
+                    }
                     else {Toast.makeText(getApplicationContext(), "마지막페이지입니다.", Toast.LENGTH_SHORT).show();}
                     break;
                 case R.id.btnFf:
@@ -176,6 +139,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
                         Log.d("FF","======================");
                         next();
                     }else{Toast.makeText(getApplicationContext(), "마지막페이지입니다.", Toast.LENGTH_SHORT).show();}
+
                     break;
             }
         }
@@ -206,6 +170,51 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     public void stopPlayer() {
         btnPlay.setImageResource(android.R.drawable.ic_media_play);
     }
+
+
+    private void play() {
+        Log.d("플레이함수","======================");
+        Intent intent = new Intent(this, SoundService.class);
+        intent.setAction(SoundService.ACTION_PLAY);
+        intent.putExtra(ListFragment.ARG_POSITION, position);
+        intent.putExtra(ListFragment.ARG_LIST_TYPE,list_type);
+        startService(intent);
+    }
+
+    private void pause(){
+        Log.d("포즈함수","======================");
+        Intent intent = new Intent(this, SoundService.class);
+        intent.setAction(SoundService.ACTION_PAUSE);
+        intent.putExtra(ListFragment.ARG_POSITION, position);
+        intent.putExtra(ListFragment.ARG_LIST_TYPE, list_type);
+        startService(intent);
+    }
+
+    private void prev() {
+        Log.i("플레이어액티비티 / prev()","=====================");
+        position = position - 1;
+        Intent intent = new Intent(this, SoundService.class);
+        intent.setAction(SoundService.ACTION_PREVIOUS);
+        intent.putExtra(ListFragment.ARG_LIST_TYPE, list_type);
+        intent.putExtra(ListFragment.ARG_POSITION, position);
+        viewPager.setCurrentItem(position);
+        Log.i("플레이어 액티비티 프리브 / 현재포지션","=====================" + position);
+        startService(intent);
+        Log.i("플레이어액티비티 프리브 / 스타트서비스","=====================" + position);
+    }
+
+    private void next() {
+        position = position + 1;
+        Intent intent = new Intent(this, SoundService.class);
+        intent.setAction(SoundService.ACTION_NEXT);
+        intent.putExtra(ListFragment.ARG_LIST_TYPE, list_type);
+        intent.putExtra(ListFragment.ARG_POSITION, position);
+        viewPager.setCurrentItem(position);
+        Log.i("플레이어 액티비티 넥스트 / 현재포지션","=====================" + position);
+        startService(intent);
+    }
+
+
 
     @Override
     protected void onDestroy(){

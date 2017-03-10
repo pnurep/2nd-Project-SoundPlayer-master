@@ -78,8 +78,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> im
             case ListFragment.TYPE_ARTIST :
                 break;
         }
-
-
     }
 
     @Override
