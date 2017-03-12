@@ -33,7 +33,9 @@ public class SoundService extends Service implements ControlInterface {
     public static MediaPlayer mMediaPlayer = null;
     public static String listType = "";
     public static int position = -1;
-    public static int notiPosition = -1;
+
+    public static boolean isIntentHasExtras = true;
+    public static boolean isMsgCameFromNoti = false;
 
     public static String action = "";
     public static String action_temp = ""; //action의 바로 이전 단계를 저장.
@@ -67,6 +69,9 @@ public class SoundService extends Service implements ControlInterface {
         Log.i("온스타트커맨드 포지션", "=============" + position);
 
         if (intent != null) {
+            //isExistIntent = true;
+            Log.e("이 인텐트는 어떤 인텐트인고?","===================" + intent);
+            //Log.e("isExistIntent", "=============================true");
             if (intent.getExtras() != null) {
                 if (mMediaPlayer == null) {
                     listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
@@ -74,8 +79,8 @@ public class SoundService extends Service implements ControlInterface {
                     Log.i("온스타트커맨드 첫번째 if 포지션", "=============" + position);
                     initMedia(position);
                 } else if (position == intent.getExtras().getInt(ListFragment.ARG_POSITION)) {
-                    listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
-                    position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
+//                    listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
+//                    position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
 
                     switch (intent.getAction()) {
                         case ACTION_PLAY:
@@ -97,6 +102,10 @@ public class SoundService extends Service implements ControlInterface {
                     initMedia(position);
                     Log.i("온스타트커맨드 세번째 if 포지션", "=============" + position);
                 }
+            }else if(!intent.hasExtra(ListFragment.ARG_POSITION)){
+                Log.e("isExistIntent", "=============================false");
+                isIntentHasExtras = false;
+                isMsgCameFromNoti = true;
             }
         }
 
@@ -162,7 +171,7 @@ public class SoundService extends Service implements ControlInterface {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                // nextPlayer();
+                 //nextPlayer();
             }
         });
     }
@@ -259,11 +268,21 @@ public class SoundService extends Service implements ControlInterface {
 
     @Override
     public void nextPlayer() {
+        if(isIntentHasExtras == false){
+            position += 1;
+            Log.i("IntentHasExtras = false","nextPlayer() position ===============" + position);
+        }
+        Log.i("서비스","nextPlayer() position ====================" + position);
         playerNext();
     }
 
     @Override
     public void prevPlayer() {
+       if(isIntentHasExtras == false){
+           position -= 1;
+           Log.i("IntentHasExtras = false","prevPlayer() position ===============" + position);
+       }
+        Log.i("서비스","prevPlayer() position ====================" + position);
         playerPrev();
     }
 
@@ -302,9 +321,6 @@ public class SoundService extends Service implements ControlInterface {
         if (mMediaPlayer != null) {
             mMediaPlayer.release();
         }
-
-//        notiPosition = position + 1;
-//        Log.i("노티포지션", "==============" + notiPosition);
 
         initMedia(position);
 

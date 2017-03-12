@@ -160,13 +160,20 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
 
     @Override
     public void nextPlayer() {
-        SoundService.position += 1;
-        viewPager.setCurrentItem(SoundService.position);
+        if(SoundService.isMsgCameFromNoti == true){
+            position = SoundService.position + 1;
+            Log.i("플레이어액티","nextPlayer() position================" + position );
+        }
+        viewPager.setCurrentItem(position);
     }
 
     @Override
     public void prevPlayer() {
-
+        if(SoundService.isMsgCameFromNoti == true){
+            position = SoundService.position - 1;
+            Log.i("플레이어액티","prevPlayer() position================" + position );
+        }
+        viewPager.setCurrentItem(position);
     }
 
     @Override
