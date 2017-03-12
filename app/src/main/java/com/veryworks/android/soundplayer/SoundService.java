@@ -108,7 +108,7 @@ public class SoundService extends Service implements ControlInterface {
                     Log.i("온스타트커맨드 세번째 if 포지션", "=============" + position);
                 }
             }else if(!intent.hasExtra(ListFragment.ARG_POSITION)){
-                Log.e("isExistIntent", "=============================false");
+                Log.e("isExistIntent", "=============================" + isIntentHasExtras);
                 isIntentHasExtras = false;
                 isMsgCameFromNoti = true;
             }
@@ -301,6 +301,7 @@ public class SoundService extends Service implements ControlInterface {
     @Override
     public void onDestroy() {
         controller.remove(this);
+        Log.e("SoundService","onDestroy===========================");
         super.onDestroy();
     }
 

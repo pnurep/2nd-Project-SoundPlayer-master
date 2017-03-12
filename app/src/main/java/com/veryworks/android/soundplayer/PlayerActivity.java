@@ -39,6 +39,12 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        Log.i("플레이어액티비티", "onCreate========================");
+
+        controller = Controller.getInstance();
+        controller.addObserver(0, this);
+        Log.e("Observer", "add!!!!!!!!!!!!!!!!");
+
         // 볼륨 조절 버튼으로 미디어 음량만 조절하기 위한 설정
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -53,11 +59,6 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
         btnPlay = (ImageButton) findViewById(R.id.btnPlay);
         btnFf = (ImageButton) findViewById(R.id.btnFf);
 
-        if (SoundService.mMediaPlayer == null) {
-            btnPlay.setImageResource(android.R.drawable.ic_media_play);
-        } else if (SoundService.mMediaPlayer.isPlaying()) {
-            btnPlay.setImageResource(android.R.drawable.ic_media_pause);
-        }
 
         btnRew.setOnClickListener(clickListener);
         btnPlay.setOnClickListener(clickListener);
@@ -91,8 +92,20 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
                 viewPager.setCurrentItem(position);
             }
         }
-        controller = Controller.getInstance();
-        controller.addObserver(this);
+
+        if (SoundService.mMediaPlayer == null) {
+            btnPlay.setImageResource(android.R.drawable.ic_media_play);
+        } else if (SoundService.mMediaPlayer.isPlaying()) {
+            if(position == SoundService.position){
+                Log.i("position","===========" + position);
+                Log.i("SoundService position","===========" + SoundService.position);
+                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+            }else {
+                btnPlay.setImageResource(android.R.drawable.ic_media_play);
+            }
+        }
+
+        Log.e("playerActivity","onCreate() position=========" + position);
 
     }
 
@@ -100,6 +113,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     private void init() {
         playerInit();
         controllerInit();
+        Log.e("init() 포지션","===================" + position);
     }
 
     private void playerInit() {
@@ -121,14 +135,18 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
             switch (v.getId()) {
                 case R.id.btnPlay:
                     if (SoundService.mMediaPlayer == null || SoundService.action == SoundService.ACTION_PAUSE) {
-                        Log.d("플레이", "======================");
+                        Log.e("플레이", "======================");
+                        Log.e("플레이 포지션","===================" + position);
                         play();
-                    } else {
+                    } else if(position == SoundService.position){
                         pause();
+                    } else if(position != SoundService.position){
+                        play();
                     }
                     break;
                 case R.id.btnRew:
-                    Log.d("Rew", "======================");
+                    Log.e("Rew", "======================");
+                    Log.e("Rew 포지션","===================" + position);
                     if (position > 0) {
                         prev();
                     } else {
@@ -137,7 +155,8 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
                     break;
                 case R.id.btnFf:
                     if (position < datas.size() - 1) {
-                        Log.d("FF", "======================");
+                        Log.e("FF", "======================");
+                        Log.e("FF 포지션","===================" + position);
                         next();
                     } else {
                         Toast.makeText(getApplicationContext(), "마지막페이지입니다.", Toast.LENGTH_SHORT).show();
@@ -162,8 +181,11 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     public void nextPlayer() {
         if(SoundService.isMsgCameFromNoti == true){
             position = SoundService.position + 1;
-            Log.i("플레이어액티","nextPlayer() position================" + position );
+            Log.e("isMsgCameFromNoti","================" + SoundService.isMsgCameFromNoti);
+            Log.e("플레이어액티","nextPlayer() position================" + position );
         }
+        btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+        Log.e("플레이어액티","nextPlayer() position================" + position );
         viewPager.setCurrentItem(position);
     }
 
@@ -171,8 +193,11 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     public void prevPlayer() {
         if(SoundService.isMsgCameFromNoti == true){
             position = SoundService.position - 1;
-            Log.i("플레이어액티","prevPlayer() position================" + position );
+            Log.e("isMsgCameFromNoti","================" + SoundService.isMsgCameFromNoti);
+            Log.e("플레이어액티","prevPlayer() position================" + position );
         }
+        btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+        Log.e("플레이어액티","prevPlayer() position================" + position );
         viewPager.setCurrentItem(position);
     }
 
@@ -184,6 +209,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
 
     private void play() {
         Log.d("플레이함수", "======================");
+        Log.e("play() 포지션","===================" + position);
         Intent intent = new Intent(this, SoundService.class);
         intent.setAction(SoundService.ACTION_PLAY);
         intent.putExtra(ListFragment.ARG_POSITION, position);
@@ -193,6 +219,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
 
     private void pause() {
         Log.d("포즈함수", "======================");
+        Log.e("pause() 포지션","===================" + position);
         Intent intent = new Intent(this, SoundService.class);
         intent.setAction(SoundService.ACTION_PAUSE);
         intent.putExtra(ListFragment.ARG_POSITION, position);
@@ -228,6 +255,7 @@ public class PlayerActivity extends AppCompatActivity implements ControlInterfac
     @Override
     protected void onDestroy() {
         controller.remove(this);
+        Log.e("PlayerActivity","onDestroy===========================");
         super.onDestroy();
     }
 
