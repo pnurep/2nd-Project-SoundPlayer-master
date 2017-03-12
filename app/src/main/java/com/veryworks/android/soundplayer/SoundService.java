@@ -69,13 +69,14 @@ public class SoundService extends Service implements ControlInterface {
         Log.i("온스타트커맨드 포지션", "=============" + position);
 
         if (intent != null) {
-            //isExistIntent = true;
             Log.e("이 인텐트는 어떤 인텐트인고?","===================" + intent);
             //Log.e("isExistIntent", "=============================true");
             if (intent.getExtras() != null) {
                 if (mMediaPlayer == null) {
                     listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
                     position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
+                    isIntentHasExtras = true;
+                    isMsgCameFromNoti = false;
                     Log.i("온스타트커맨드 첫번째 if 포지션", "=============" + position);
                     initMedia(position);
                 } else if (position == intent.getExtras().getInt(ListFragment.ARG_POSITION)) {
@@ -93,6 +94,8 @@ public class SoundService extends Service implements ControlInterface {
                             casePrev();
                             break;
                     }
+                    isIntentHasExtras = true;
+                    isMsgCameFromNoti = false;
                     Log.i("온스타트커맨드 두번째 if 포지션", "=============" + position);
 
                 } else if (position != intent.getExtras().getInt(ListFragment.ARG_POSITION)) {
@@ -100,6 +103,8 @@ public class SoundService extends Service implements ControlInterface {
                     position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
                     mMediaPlayer.release();
                     initMedia(position);
+                    isIntentHasExtras = true;
+                    isMsgCameFromNoti = false;
                     Log.i("온스타트커맨드 세번째 if 포지션", "=============" + position);
                 }
             }else if(!intent.hasExtra(ListFragment.ARG_POSITION)){
@@ -205,6 +210,8 @@ public class SoundService extends Service implements ControlInterface {
             controller.stop();
             stopForeground(true);
         }
+
+
     }
 
     // Activity 에서의 클릭 버튼 생성
