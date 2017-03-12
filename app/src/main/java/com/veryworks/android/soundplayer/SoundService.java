@@ -33,6 +33,7 @@ public class SoundService extends Service implements ControlInterface {
     public static MediaPlayer mMediaPlayer = null;
     public static String listType = "";
     public static int position = -1;
+    public static int notiPosition = -1;
 
     public static String action = "";
     public static String action_temp = ""; //action의 바로 이전 단계를 저장.
@@ -46,7 +47,8 @@ public class SoundService extends Service implements ControlInterface {
 
     Controller controller;
 
-    public SoundService(){
+    public SoundService() {
+        Log.e("Observer", "add!!!!!!!!!!!!!!!!");
         controller = Controller.getInstance();
         controller.addObserver(this);
     }
@@ -60,41 +62,40 @@ public class SoundService extends Service implements ControlInterface {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.i("온스타트커맨드","==================");
+        Log.i("온스타트커맨드", "==================" + intent.getAction());
         Log.i("미디어 플레이어", "================" + mMediaPlayer);
-        Log.i("온스타트커맨드 포지션","=============" + position);
+        Log.i("온스타트커맨드 포지션", "=============" + position);
 
-        if(intent != null) {
-            if(intent.getExtras() != null) {
-                if(mMediaPlayer == null) {
+        if (intent != null) {
+            if (intent.getExtras() != null) {
+                if (mMediaPlayer == null) {
                     listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
                     position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
-                    Log.i("온스타트커맨드 첫번째 if 포지션","=============" + position);
-                    initMedia();
-                }
-               else if(position == intent.getExtras().getInt(ListFragment.ARG_POSITION)){
+                    Log.i("온스타트커맨드 첫번째 if 포지션", "=============" + position);
+                    initMedia(position);
+                } else if (position == intent.getExtras().getInt(ListFragment.ARG_POSITION)) {
                     listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
                     position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
 
-                    switch (intent.getAction()){
-                        case ACTION_PLAY :
+                    switch (intent.getAction()) {
+                        case ACTION_PLAY:
                             casePlay();
                             break;
-                        case ACTION_NEXT :
+                        case ACTION_NEXT:
                             caseNext();
                             break;
-                        case ACTION_PREVIOUS :
+                        case ACTION_PREVIOUS:
                             casePrev();
                             break;
                     }
-                    Log.i("온스타트커맨드 두번째 if 포지션","=============" + position);
+                    Log.i("온스타트커맨드 두번째 if 포지션", "=============" + position);
 
-                }else if(position != intent.getExtras().getInt(ListFragment.ARG_POSITION)){
+                } else if (position != intent.getExtras().getInt(ListFragment.ARG_POSITION)) {
                     listType = intent.getExtras().getString(ListFragment.ARG_LIST_TYPE);
                     position = intent.getExtras().getInt(ListFragment.ARG_POSITION);
                     mMediaPlayer.release();
-                    initMedia();
-                    Log.i("온스타트커맨드 세번째 if 포지션","=============" + position);
+                    initMedia(position);
+                    Log.i("온스타트커맨드 세번째 if 포지션", "=============" + position);
                 }
             }
         }
@@ -104,56 +105,56 @@ public class SoundService extends Service implements ControlInterface {
     }
 
 
-    private void casePlay(){
-        if(mMediaPlayer == null){
-            initMedia();
-            Log.i("케이스플레이 포지션","=============" + position);
+    private void casePlay() {
+        if (mMediaPlayer == null) {
+            initMedia(position);
+            Log.i("케이스플레이 포지션", "=============" + position);
         }
-        Log.i("케이스플레이 포지션","=============" + position);
+        Log.i("케이스플레이 포지션", "=============" + position);
     }
 
-    private void caseNext(){
-        Log.i("케이스 넥스트","==================");
-            if(action_temp == ACTION_PLAY){
+    private void caseNext() {
+        Log.i("케이스 넥스트", "==================");
+        if (action_temp == ACTION_PLAY) {
+            mMediaPlayer.release();
+            Log.i("미디어 플레이어 릴리즈", "==================");
+            initMedia(position);
+            Log.i("이닛미디어", "==================");
+            Log.i("케이스넥스트 포지션", "=============" + position);
+        } else {
+            initMedia(position);
+        }
+    }
+
+    private void casePrev() {
+        if (position >= 0) {
+            Log.i("케이스 프리브", "==================");
+            if (action_temp == ACTION_PLAY) {
                 mMediaPlayer.release();
-                Log.i("미디어 플레이어 릴리즈","==================");
-                initMedia();
-                Log.i("이닛미디어","==================");
-                Log.i("케이스넥스트 포지션","=============" + position);
-            }else{
-                initMedia();
+                Log.i("미디어 플레이어 릴리즈", "==================");
+                initMedia(position);
+                Log.i("이닛미디어", "==================");
+                Log.i("케이스프리브 포지션", "=============" + position);
+            } else {
+                initMedia(position);
             }
-    }
-
-    private void casePrev(){
-        if(position >= 0){
-            Log.i("케이스 프리브","==================");
-             if(action_temp == ACTION_PLAY){
-                 mMediaPlayer.release();
-                 Log.i("미디어 플레이어 릴리즈","==================");
-                 initMedia();
-                 Log.i("이닛미디어","==================");
-                 Log.i("케이스프리브 포지션","=============" + position);
-             }else {
-                 initMedia();
-             }
         }
     }
 
 
     // 1. 미디어 플레이어 기본값 설정
-    private void initMedia() {
-        if(datas.size() < 1){
-            switch(listType){
-                case ListFragment.TYPE_SONG :
+    private void initMedia(int position) {
+        if (datas.size() < 1) {
+            switch (listType) {
+                case ListFragment.TYPE_SONG:
                     datas = DataLoader.getSounds(getBaseContext());
                     break;
-                case ListFragment.TYPE_ARTIST :
+                case ListFragment.TYPE_ARTIST:
             }
         }
         // 음원 uri
         musicUri = datas.get(position).music_uri; //TODO datas.get(position).music_uri;
-        Log.i("이닛미디어 포지션","=============" + position);
+        Log.i("이닛미디어 포지션", "=============" + position);
 
         // 플레이어에 음원 세팅
         mMediaPlayer = MediaPlayer.create(this, musicUri);
@@ -161,36 +162,36 @@ public class SoundService extends Service implements ControlInterface {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                nextPlayer();
+                // nextPlayer();
             }
         });
     }
 
     // 2. 명령어 실행
-    private void handleAction( Intent intent ) {
-        if( intent == null || intent.getAction() == null )
+    private void handleAction(Intent intent) {
+        if (intent == null || intent.getAction() == null)
             return;
 
         action = intent.getAction();
-        Log.i("핸들액션","==================");
+        Log.i("핸들액션", "==================" + action);
 
-        if( action.equalsIgnoreCase( ACTION_PLAY ) ) {
-            Log.i("서비스의 플레이 진입","=====================");
+        if (action.equalsIgnoreCase(ACTION_PLAY)) {
+            Log.i("서비스의 플레이 진입", "=====================");
             Log.i("포지션", "===============" + position);
             action_temp = ACTION_PLAY;
             controller.play();
-            Log.i("핸들액션 / PLAY / posi","================" + position);
-        } else if( action.equalsIgnoreCase( ACTION_PAUSE ) ) {
+            Log.i("핸들액션 / PLAY / posi", "================" + position);
+        } else if (action.equalsIgnoreCase(ACTION_PAUSE)) {
             controller.pause();
-        } else if( action.equalsIgnoreCase( ACTION_PREVIOUS ) ) {
+        } else if (action.equalsIgnoreCase(ACTION_PREVIOUS)) {
             action_temp = ACTION_PLAY;
             controller.prev();
-            Log.i("핸들액션 / PREVIOUS / posi","================" + position);
-        } else if( action.equalsIgnoreCase( ACTION_NEXT ) ) {
+            Log.i("핸들액션 / PREVIOUS / posi", "================" + position);
+        } else if (action.equalsIgnoreCase(ACTION_NEXT)) {
             action_temp = ACTION_PLAY;
             controller.next();
-            Log.i("핸들액션 / NEXT / posi","================" + position);
-        } else if( action.equalsIgnoreCase( ACTION_STOP ) ) {
+            Log.i("핸들액션 / NEXT / posi", "================" + position);
+        } else if (action.equalsIgnoreCase(ACTION_STOP)) {
             action_temp = ACTION_STOP;
             controller.stop();
             stopForeground(true);
@@ -198,9 +199,9 @@ public class SoundService extends Service implements ControlInterface {
     }
 
     // Activity 에서의 클릭 버튼 생성
-    private NotificationCompat.Action generateAction(int icon, String title, String intentAction ) {
-        Intent intent = new Intent( getApplicationContext(), SoundService.class );
-        intent.setAction( intentAction );
+    private NotificationCompat.Action generateAction(int icon, String title, String intentAction) {
+        Intent intent = new Intent(getApplicationContext(), SoundService.class);
+        intent.setAction(intentAction);
         // PendingIntent : 인텐트를 서비스 밖에서 실행시킬 수 있도록 담아두는 주머니
         PendingIntent pendingIntent = getService(getApplicationContext(), 1, intent, 0);
 
@@ -208,24 +209,24 @@ public class SoundService extends Service implements ControlInterface {
     }
 
     // 노티바를 생성하는 함수
-    private Notification buildNotification(NotificationCompat.Action action ) {
+    private Notification buildNotification(NotificationCompat.Action action) {
 
-        Log.i("노티바 생성됨","=========================");
+        Log.i("노티바 생성됨", "=========================");
 
         Sound sound = datas.get(position);
-        Log.i("빌드노티피케이션 position","=================" + position);
+        Log.i("빌드노티피케이션 position", "=================" + position);
 
         // Stop intent
-        Intent intentStop = new Intent( getApplicationContext(), SoundService.class );
-        intentStop.setAction( ACTION_STOP );
+        Intent intentStop = new Intent(getApplicationContext(), SoundService.class);
+        intentStop.setAction(ACTION_STOP);
         PendingIntent stopIntent = getService(getApplicationContext(), 1, intentStop, 0);
 
         // 노티바 생성
-        NotificationCompat.Builder builder = new NotificationCompat.Builder( this );
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         builder.setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle( sound.getTitle() )
-                .setContentText( sound.getArtist() );
+                .setContentTitle(sound.getTitle())
+                .setContentText(sound.getArtist());
 
         // 퍼즈일 경우만 노티 삭제 가능
 //        if(ACTION_PAUSE.equals(action_flag)) {
@@ -247,7 +248,7 @@ public class SoundService extends Service implements ControlInterface {
 
     @Override
     public void startPlayer() {
-        Log.i("서비스의 스타트 플레이어","=====================");
+        Log.i("서비스의 스타트 플레이어", "=====================");
         playerStart();
     }
 
@@ -278,34 +279,38 @@ public class SoundService extends Service implements ControlInterface {
     }
 
 
-    private void playerStart(){
+    private void playerStart() {
         // 노티피케이션 바 생성
         //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ), ACTION_PAUSE );
-        notification = buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE ));
+        notification = buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE));
         notificationManager.notify(NOTIFICATION_ID, notification);
         startForeground(NOTIFICATION_ID, notification);
-        Log.i("playerStart 포지션","=============" + position);
+        Log.i("playerStart 포지션", "=============" + position);
         mMediaPlayer.start();
     }
 
-    private void playerPause(){
-        notification = buildNotification( generateAction( android.R.drawable.ic_media_play, "Play", ACTION_PLAY ));
+    private void playerPause() {
+        notification = buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
         notificationManager.notify(NOTIFICATION_ID, notification);
-        Log.i("playerPause 포지션","=============" + position);
+        Log.i("playerPause 포지션", "=============" + position);
         mMediaPlayer.pause();
     }
 
-    private void playerNext(){
-        Log.i("playerNext 포지션","=============" + position);
+    private void playerNext() {
+        Log.i("playerNext 포지션", "=============" + position);
 
-        if(mMediaPlayer != null){
+        if (mMediaPlayer != null) {
             mMediaPlayer.release();
         }
-        initMedia();
 
-        if(mMediaPlayer.isPlaying()){
+//        notiPosition = position + 1;
+//        Log.i("노티포지션", "==============" + notiPosition);
+
+        initMedia(position);
+
+        if (mMediaPlayer.isPlaying()) {
             notification = buildNotification(generateAction(android.R.drawable.ic_media_play, "PLAY", ACTION_PLAY));
-        }else {
+        } else {
             notification = buildNotification(generateAction(android.R.drawable.ic_media_pause, "PAUSE", ACTION_PAUSE));
         }
 
@@ -313,17 +318,17 @@ public class SoundService extends Service implements ControlInterface {
         mMediaPlayer.start();
     }
 
-    private void playerPrev(){
-        Log.i("playerPrev 포지션","=============" + position);
+    private void playerPrev() {
+        Log.i("playerPrev 포지션", "=============" + position);
 
-        if(mMediaPlayer != null){
+        if (mMediaPlayer != null) {
             mMediaPlayer.release();
         }
-        initMedia();
+        initMedia(position);
 
-        if(mMediaPlayer.isPlaying()){
+        if (mMediaPlayer.isPlaying()) {
             notification = buildNotification(generateAction(android.R.drawable.ic_media_play, "PLAY", ACTION_PLAY));
-        }else {
+        } else {
             notification = buildNotification(generateAction(android.R.drawable.ic_media_pause, "PAUSE", ACTION_PAUSE));
         }
 
@@ -332,15 +337,15 @@ public class SoundService extends Service implements ControlInterface {
 
     }
 
-    private void playerStop(){
-        if(mMediaPlayer != null) {
+    private void playerStop() {
+        if (mMediaPlayer != null) {
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
         action_temp = ACTION_STOP;
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel( NOTIFICATION_ID );
-        Intent intent = new Intent( getApplicationContext(), SoundService.class );
-        stopService( intent );
+        notificationManager.cancel(NOTIFICATION_ID);
+        Intent intent = new Intent(getApplicationContext(), SoundService.class);
+        stopService(intent);
     }
 }

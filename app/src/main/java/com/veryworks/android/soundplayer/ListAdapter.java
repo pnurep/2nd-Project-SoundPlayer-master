@@ -28,7 +28,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> im
         this.context = context;
         this.datas = datas;
         this.flag = flag;
-        switch(flag){
+        switch (flag) {
             case ListFragment.TYPE_SONG:
                 item_layout_id = R.layout.list_fragment_item;
                 break;
@@ -67,15 +67,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> im
         holder.textTitle.setText(common.getTitle());
         holder.textArtist.setText(common.getArtist());
 
-        switch (flag){
-            case ListFragment.TYPE_SONG :
+        switch (flag) {
+            case ListFragment.TYPE_SONG:
                 holder.textDuration.setText(common.getDurationText());
                 break;
-            case ListFragment.TYPE_ALBUM :
+            case ListFragment.TYPE_ALBUM:
                 break;
-            case ListFragment.TYPE_GENRE :
+            case ListFragment.TYPE_GENRE:
                 break;
-            case ListFragment.TYPE_ARTIST :
+            case ListFragment.TYPE_ARTIST:
                 break;
         }
     }
@@ -109,7 +109,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> im
             imageView = (ImageView) view.findViewById(R.id.imageView);
             textTitle = (TextView) view.findViewById(R.id.textTitle);
             textArtist = (TextView) view.findViewById(R.id.textArtist);
-            switch(flag){
+            switch (flag) {
                 case ListFragment.TYPE_SONG:
                     textDuration = (TextView) view.findViewById(R.id.textDuration);
 
@@ -126,7 +126,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> im
                         }
                     });
                     break;
-                default :
+                default:
                     // nothing
                     break;
             }

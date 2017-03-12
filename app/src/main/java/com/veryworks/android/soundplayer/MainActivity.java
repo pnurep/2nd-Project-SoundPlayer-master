@@ -45,15 +45,15 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.i("메인액티비티 - 온크리에이트","======================");
+        Log.i("메인액티비티 - 온크리에이트", "======================");
 
-        if(savedInstanceState != null)
+        if (savedInstanceState != null)
             return;
 
         checkPermission();
     }
 
-    private void init(){
+    private void init() {
 
         // 화면의 툴바 가져오기
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -76,12 +76,12 @@ public class MainActivity extends AppCompatActivity
         // tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE); // 가로축 스크롤하기
 
         // 탭 생성 및 타이틀 입력
-        tabLayout.addTab( tabLayout.newTab().setText(
-                getResources().getString( R.string.menu_title )) // "Title" -> values/strings.xml > 값을 세팅
+        tabLayout.addTab(tabLayout.newTab().setText(
+                getResources().getString(R.string.menu_title)) // "Title" -> values/strings.xml > 값을 세팅
         );
-        tabLayout.addTab( tabLayout.newTab().setText( getResources().getString(R.string.menu_artist)) );
-        tabLayout.addTab( tabLayout.newTab().setText( getResources().getString(R.string.menu_album)) );
-        tabLayout.addTab( tabLayout.newTab().setText( getResources().getString(R.string.menu_genre)) );
+        tabLayout.addTab(tabLayout.newTab().setText(getResources().getString(R.string.menu_artist)));
+        tabLayout.addTab(tabLayout.newTab().setText(getResources().getString(R.string.menu_album)));
+        tabLayout.addTab(tabLayout.newTab().setText(getResources().getString(R.string.menu_genre)));
         // 2. 뷰페이저
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         // 아답터 설정 필요
@@ -120,17 +120,17 @@ public class MainActivity extends AppCompatActivity
         btnUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (viewPager.getCurrentItem()){
-                    case 0 :
+                switch (viewPager.getCurrentItem()) {
+                    case 0:
                         listFragment1.recyclerView.smoothScrollToPosition(listFragment1.position);
-                    break;
-                    case 1 :
+                        break;
+                    case 1:
                         listFragment2.recyclerView.smoothScrollToPosition(listFragment2.position);
                         break;
-                    case 2 :
+                    case 2:
                         listFragment3.recyclerView.smoothScrollToPosition(listFragment3.position);
                         break;
-                    case 3 :
+                    case 3:
                         listFragment4.recyclerView.smoothScrollToPosition(listFragment4.position);
                 }
             }
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // 리스트 섞기
-    public void setShuffle(){
+    public void setShuffle() {
         // TODO 구현합시다
     }
 
@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
     // 툴바 우측 상단 메뉴 설정
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity
                 String title = null;
                 String artist = null;
 
-                for(int i=0; i<Database.getSoundListSize(); i++){
+                for (int i = 0; i < Database.getSoundListSize(); i++) {
                     sound = Database.getSound(i);
                     title = sound.getTitle();
                     artist = sound.getArtist();
@@ -193,6 +194,7 @@ public class MainActivity extends AppCompatActivity
 
         return true;
     }
+
     // 툴바 우측 상단 메뉴 onClick
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -202,7 +204,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch(id) {
+        switch (id) {
             case R.id.action_settings:
                 Toast.makeText(this, "Setting is selected!!!", Toast.LENGTH_SHORT).show();
                 return true;
@@ -247,11 +249,11 @@ public class MainActivity extends AppCompatActivity
 
     // 권한관리
     private void checkPermission() {
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
-            if( PermissionControl.checkPermission(this, REQ_PERMISSION) ){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (PermissionControl.checkPermission(this, REQ_PERMISSION)) {
                 init();
             }
-        }else{
+        } else {
             init();
         }
     }
@@ -259,10 +261,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQ_PERMISSION){
-            if( PermissionControl.onCheckResult(grantResults)){
+        if (requestCode == REQ_PERMISSION) {
+            if (PermissionControl.onCheckResult(grantResults)) {
                 init();
-            }else{
+            } else {
                 Toast.makeText(this, "권한을 허용하지 않으시면 프로그램을 실행할 수 없습니다.", Toast.LENGTH_LONG).show();
             }
         }
@@ -270,21 +272,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        Log.i("메인액티비티 - 온리줌","======================");
+        Log.i("메인액티비티 - 온리줌", "======================");
 
         super.onResume();
     }
 
     @Override
     protected void onStop() {
-        Log.i("메인액티비티 - 온스탑","======================");
+        Log.i("메인액티비티 - 온스탑", "======================");
 
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        Log.i("메인액티비티 - 온디스트로이","======================");
+        Log.i("메인액티비티 - 온디스트로이", "======================");
         super.onDestroy();
     }
 
